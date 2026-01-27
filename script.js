@@ -1,28 +1,14 @@
 import express from 'express'
 
-const app = express()
-const PORT = 3000
-
-const isNeutral = v => typeof v === 'string' && /^[1-9]\d*$/.test(v)
-
-const gcd = (a, b) => {
-	while (b) {
-		;[a, b] = [b, a % b]
-	}
-	return a
-}
-
-const lcm = (a, b) => (a / gcd(a, b)) * b
-
-app.get('/mazurkevich_mikhail_14_gmail_com', (req, res) => {
-	const { x, y } = req.query
-	if (!isNeutral(x) || !isNeutral(y)) {
-		res.send('NaN')
-		return
-	}
-	res.send(String(lcm(+x, +y)))
+const a = express(),
+	p = process.env.PORT || 3000
+const gcd = (x, y) => (y ? gcd(y, x % y) : x)
+const lcm = (x, y) => (x * y) / gcd(x, y)
+a.get('/mazurkevich_mikhail_14_gmail_com', (req, res) => {
+	const x = +req.query.x,
+		y = +req.query.y
+	if (!Number.isInteger(x) || !Number.isInteger(y) || x < 1 || y < 1)
+		return res.end('NaN')
+	res.end(String(lcm(x, y)))
 })
-
-app.listen(PORT, () => {
-	console.log('Server on http://localhost:' + PORT)
-})
+a.listen(p)
