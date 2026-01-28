@@ -1,14 +1,27 @@
 import express from 'express'
 
-const a = express(),
-	p = process.env.PORT || 3000
-const gcd = (x, y) => (y ? gcd(y, x % y) : x)
-const lcm = (x, y) => (x * y) / gcd(x, y)
-a.get('/app/mazurkevich_mikhail_14_gmail_com', (req, res) => {
-	const x = +req.query.x,
-		y = +req.query.y
-	if (!Number.isInteger(x) || !Number.isInteger(y) || x < 1 || y < 1)
-		return res.end('NaN')
-	res.end(String(lcm(x, y)))
+const app = express()
+
+const gcd = (a, b) => {
+	while (b !== 0n) {
+		;[a, b] = [b, a % b]
+	}
+	return a
+}
+
+app.get('/app/mazurkevich_mikhail_14_gmail_com', (req, res) => {
+	const { x, y } = req.query
+
+	if (!/^[1-9]\d*$/.test(x) || !/^[1-9]\d*$/.test(y)) {
+		return res.send('NaN')
+	}
+
+	const a = BigInt(x)
+	const b = BigInt(y)
+
+	const lcm = (a * b) / gcd(a, b)
+
+	res.send(lcm.toString())
 })
-a.listen(p)
+
+app.listen(process.env.PORT || 3000)
